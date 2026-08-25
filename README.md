@@ -50,4 +50,4 @@ and a chat interface (RAG) to ask questions about the content.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+see [LICENSE](LICENSE).
