@@ -1,0 +1,20 @@
+
+.env
+
+# Virtual environment
+venv/
+
+# Generated / cache
+vector_db/
+downloads/
+__pycache__/
+*.pyc
+*.pyo
+
+# Secrets
+.env
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
