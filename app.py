@@ -1,6 +1,8 @@
 import streamlit as st
 import time
 from dotenv import load_dotenv
+import os
+import tempfile
 from utils.audio_processor import process_input
 from core.transcriber import transcribe_all
 from core.summarizer import summarize, generate_title
@@ -335,8 +337,13 @@ with st.sidebar:
     st.markdown('<div class="hero-sub">Meeting Intelligence</div>', unsafe_allow_html=True)
     st.markdown("---")
 
-    st.markdown('<span class="badge badge-purple">Input</span>', unsafe_allow_html=True)
-    source = st.text_input("YouTube URL or File Path", placeholder="https://youtube.com/watch?v=... or /path/to/file.mp4")
+        st.markdown('<span class="badge badge-purple">Input</span>', unsafe_allow_html=True)
+    source = st.text_input("YouTube URL", placeholder="https://youtube.com/watch?v=...")
+
+    uploaded_file = st.file_uploader(
+        "Or upload a video/audio file",
+        type=["mp4", "mov", "mkv", "mp3", "wav", "m4a"]
+    )
 
     language = st.selectbox("Language", ["english", "hinglish"], index=0)
 
@@ -362,16 +369,23 @@ st.markdown("---")
 
 # ── Run Pipeline ────────────────────────────────────────────────────────────────
 if run_btn:
-    if not source.strip():
-        st.error("Please enter a YouTube URL or file path.")
+    if not source.strip() and uploaded_file is None:
+        st.error("Please enter a YouTube URL or upload a file.")
     else:
+        if uploaded_file is not None:
+            suffix = os.path.splitext(uploaded_file.name)[1]
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                tmp.write(uploaded_file.getbuffer())
+                active_source = tmp.name
+        else:
+            active_source = source
+
         st.session_state.pipeline_done = False
         st.session_state.result = None
         st.session_state.chat_history = []
         st.session_state.pipeline_steps = {}
-
         progress_placeholder = st.empty()
-
+        
         def update_step(key, state):
             st.session_state.pipeline_steps[key] = state
 
@@ -380,7 +394,7 @@ if run_btn:
                 st.info("⚙️ Pipeline running — see sidebar for live status…")
 
             update_step("audio", "active")
-            chunks = process_input(source)
+            chunks = process_input(active_source)
             update_step("audio", "done")
 
             update_step("transcript", "active")
