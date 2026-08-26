@@ -337,7 +337,7 @@ with st.sidebar:
     st.markdown('<div class="hero-sub">Meeting Intelligence</div>', unsafe_allow_html=True)
     st.markdown("---")
 
-        st.markdown('<span class="badge badge-purple">Input</span>', unsafe_allow_html=True)
+    st.markdown('<span class="badge badge-purple">Input</span>', unsafe_allow_html=True)
     source = st.text_input("YouTube URL", placeholder="https://youtube.com/watch?v=...")
 
     uploaded_file = st.file_uploader(
